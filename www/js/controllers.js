@@ -6,8 +6,9 @@
 
 var controllers = angular.module('controllers', []);
 
-controllers.controller('AppCtrl', function ($scope, $ionicModal, $timeout) {
+controllers.controller('AppCtrl', function ($scope, $ionicModal, $timeout, $http, $window) {
     $scope.loginData = {};
+    $scope.user = null;
 
     $ionicModal.fromTemplateUrl('templates/login.html', {
         scope: $scope
@@ -16,6 +17,7 @@ controllers.controller('AppCtrl', function ($scope, $ionicModal, $timeout) {
     });
 
     $scope.closeLogin = function () {
+        $scope.loginData = {};
         $scope.modal.hide();
     };
 
@@ -23,13 +25,41 @@ controllers.controller('AppCtrl', function ($scope, $ionicModal, $timeout) {
         $scope.modal.show();
     };
 
-    $scope.doLogin = function () {
-        console.log("Doing Login", $scope.loginData);
-
-        $timeout(function () {
-            $scope.closeLogin();
-        }, 1000);
+    $scope.logout = function () {
+        document.cookie = 'chatToken=;expires=-1;';
+        $window.location.reload();
     };
+
+    $scope.doLogin = function () {
+        $http.post('http://localhost:8080/login', $scope.loginData).then(function (result) {
+            document.cookie = 'chatToken=' + result.data.token;
+            if (result.data.success) $window.location.reload();
+
+            $scope.closeLogin();
+        });
+    };
+
+    $scope.readLocalCookie = function (name) {
+        if (!name) return null;
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            if (cookies[i].indexOf('=') < 0) continue;
+            if (cookies[i].substr(0, cookies[i].indexOf('=')) === name) {
+                return cookies[i].substr(cookies[i].indexOf('=') + 1, cookies[i].length - cookies[i].indexOf('=') - 1);
+            }
+        }
+        return null;
+    };
+
+    $timeout(function () {
+        var token = $scope.readLocalCookie('chatToken');
+
+        if (token) {
+            $http.get('http://localhost:8080/' + token).then(function (result) {
+                if (result.data.success) $scope.user = result.data.user;
+            });
+        }
+    }, 0);
 });
 
 controllers.controller('PlaylistsCtrl', function ($scope) {
