@@ -8,18 +8,18 @@
   margin-left: -25px;
 
   .jumper {
-    position: absolute;
-    left: 0;
-    top: 0;
-    display: inline-block;
-    width: 10px;
-    height: 10px;
+	position: absolute;
+	left: 0;
+	top: 0;
+	display: inline-block;
+	width: 10px;
+	height: 10px;
   }
 }
 
 @for $i from 1 through 4 {
   .jumper:nth-child(#{$i}) {
-    animation: jumper 2s infinite #{0.5 * ($i - 1)}s linear normal;
+	animation: jumper 2s infinite #{0.5 * ($i - 1)}s linear normal;
   }
 }
 
@@ -44,50 +44,125 @@
   padding: 1rem;
 
   .sender {
-    flex: 1 0 25%;
+	flex: 1 0 25%;
   }
 
   .last-message {
-    flex: 1 1 100%;
+	flex: 1 1 100%;
   }
 
   .last-timestamp {
-    flex: 1 0 25%;
-    text-align: right;
+	flex: 1 0 25%;
+	text-align: right;
+  }
+}
+
+.chat-messages {
+  bottom: 4rem;
+
+  ion-list {
+	display: flex;
+	flex-flow: column;
+	justify-content: flex-end;
+  }
+
+  .chat-message {
+	animation: slide-left 0.5s ease-in-out forwards;
+	padding: 0;
+	height: 4rem;
+
+	&.alternative {
+	  background-color: #EEE;
+	  animation: slide-right 0.5s ease-in-out forwards;
+	}
+
+	.sender {
+	  position: absolute;
+	  top: 0.25rem;
+	  left: 0.5rem;
+	  font-weight: 600;
+	}
+
+	.message {
+	  position: absolute;
+	  top: 1.5rem;
+	  left: 0.5rem;
+	}
+
+	.timestamp {
+	  position: absolute;
+	  right: 0.5rem;
+	  top: 0.25rem;
+	  color: #666;
+	  font-size: 0.8rem;
+	}
+  }
+}
+
+.chat-footer {
+  height: 4rem;
+  border-top: solid 1px #999;
+
+  textarea {
+	height: 100%;
+	width: 100%;
+	resize: none;
+  }
+}
+
+@keyframes slide-left {
+  0% {
+	transform: translateX(50%);
+	opacity: 0;
+  }
+  100% {
+	transform: translate(0);
+	opacity: 1;
+  }
+}
+
+@keyframes slide-right {
+  0% {
+	transform: translateX(-50%);
+	opacity: 0;
+  }
+  100% {
+	transform: translateX(0);
+	opacity: 1;
   }
 }
 
 @keyframes jumper {
   0% {
-    transform: translate(0,0);
-    background-color: #CCC;
+	transform: translate(0, 0);
+	background-color: #CCC;
   }
   12% {
-    background-color: #999;
+	background-color: #999;
   }
   25% {
-    transform: translate(0,40px);
-    background-color: #CCC;
+	transform: translate(0, 40px);
+	background-color: #CCC;
   }
   37% {
-    background-color: #999;
+	background-color: #999;
   }
   50% {
-    transform: translate(40px,40px);
-    background-color: #CCC;
+	transform: translate(40px, 40px);
+	background-color: #CCC;
   }
   62% {
-    background-color: #999;
+	background-color: #999;
   }
   75% {
-    transform: translate(40px,0);
-    background-color: #CCC;
+	transform: translate(40px, 0);
+	background-color: #CCC;
   }
   87% {
-    background-color: #999;
+	background-color: #999;
   }
   100% {
-    transform: translate(0,0);
-    background-color: #CCC;
+	transform: translate(0, 0);
+	background-color: #CCC;
   }
 }

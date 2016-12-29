@@ -25,12 +25,17 @@ controllers.controller('AppCtrl', function ($scope, authService, $state, $ionicH
     };
 });
 
-controllers.controller('ChatListCtrl', function ($scope, chatService) {
+controllers.controller('ChatListCtrl', function ($scope, chatService, authService) {
     $scope.searchTimeout;
     $scope.search = { fragment: '' };
     $scope.userSearchResults = [];
     $scope.performingUserSearch = false;
     $scope.chatlist = [];
+    $scope.user = null;
+
+    $scope.$watch(authService.getUser, function (newValue, oldValue) {
+        $scope.user = newValue;
+    });
 
     $scope.$watch(chatService.users.results, function (newValue, oldValue) {
         $scope.userSearchResults = newValue;
@@ -58,33 +63,8 @@ controllers.controller('ChatListCtrl', function ($scope, chatService) {
         chatService.list.add(user);
     };
 
-    $scope.formatDate = function (date, userFormat) {
-        if (typeof date === 'string' || typeof date === 'number') date = new Date(date);
-
-        var formats = {
-            'DD': ('0' + date.getDate()).slice(-2),
-            'D': date.getDate(),
-            'MM': ('0' + date.getMonth()).slice(-2),
-            'M': date.getMonth(),
-            'YYYY': date.getFullYear(),
-            'YY': date.getYear(),
-            'hh': ('0' + date.getHours()).slice(-2),
-            'h': date.getHours(),
-            'mm': ('0' + date.getMinutes()).slice(-2),
-            'm': date.getMinutes(),
-            'ss': ('0' + date.getSeconds()).slice(-2),
-            's': date.getSeconds(),
-            'AA': date.getHours() > 12 ? 'PM' : 'AM',
-            'aa': date.getHours() > 12 ? 'pm' : 'am'
-        };
-
-        if (formats['h'] > 12) formats['h'] -= 12;
-        if (formats['h'] === 0) formats['h'] = 12;
-        formats['hh'] = ('0' + formats['h']).slice(-2);
-
-        for (var format in formats) {
-            userFormat = userFormat.replace(format, formats[format]);
-        }return userFormat;
+    $scope.formatDate = function (a, b) {
+        return chatService.formatDate(a, b);
     };
 });
 
@@ -92,6 +72,105 @@ controllers.controller('LoginCtrl', function ($scope, authService) {
     $scope.data = {};
 
     $scope.login = function () {
-        authService.login($scope.data);
+        authService.login($scope.data).then(function (success) {
+            if (success) $scope.data = {};else $scope.data.Password = '';
+        }).catch(function (err) {
+            $scope.data.Password = '';
+        });
     };
+});
+
+controllers.controller('ChatMessageCtrl', function ($scope, $stateParams, $timeout, chatService, authService) {
+    $scope.chatId = $stateParams.id;
+    $scope.messages = [];
+    $scope.socket = null;
+    $scope.userMessage;
+    $scope.user = null;
+    $scope.chatInfo = null;
+    $scope.scrollLocked = false;
+
+    $scope.$on('$destroy', function () {
+        $scope.socket.disconnect();
+    });
+
+    $scope.$watch(chatService.chatInfo.get, function (newValue, oldValue) {
+        $scope.chatInfo = newValue;
+    });
+
+    $scope.$watch(authService.getUser, function (newValue, oldValue) {
+        $scope.user = newValue;
+    });
+
+    $scope.$watch(chatService.messages.get, function (newValue, oldValue) {
+        $scope.messages = newValue;
+    });
+
+    $scope.sendMessage = function (event) {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+            $scope.userMessage.Timestamp = Date.now();
+
+            $scope.socket.send($scope.userMessage);
+            chatService.messages.add($scope.userMessage);
+            setTimeout(function () {
+                $scope.scrollChatToBottom();
+            }, 1);
+
+            $scope.resetUserMessage();
+        }
+    };
+
+    $scope.resetUserMessage = function () {
+        var recipient = !$scope.user || !$scope.chatInfo ? null : $scope.user.Username === $scope.chatInfo.Recipient.Username ? $scope.chatInfo.Sender : $scope.chatInfo.Recipient;
+        $scope.userMessage = {
+            Sender: {
+                DisplayName: $scope.user ? $scope.user.DisplayName : '',
+                Username: $scope.user ? $scope.user.Username : ''
+            },
+            Recipient: {
+                DisplayName: recipient ? recipient.DisplayName : '',
+                Username: recipient ? recipient.Username : ''
+            },
+            Message: '',
+            Timestamp: 0
+        };
+    };
+
+    $scope.scrollChatToBottom = function () {
+        var messagesScrollContainer = document.querySelector('.chat-messages');
+
+        if ($scope.messages.length > 0 && !$scope.scrollLocked) messagesScrollContainer.scrollTop = messagesScrollContainer.scrollHeight - messagesScrollContainer.offsetHeight;
+        if ($scope.messages.length >= 100) $scope.messages = chatService.messages.removeRange(100, $scope.messages.length - 100);
+    };
+
+    $scope.formatDate = function (a, b) {
+        return chatService.formatDate(a, b);
+    };
+
+    $timeout(function () {
+        chatService.chatInfo.getRemoteInfo($scope.chatId);
+
+        $scope.socket = io.connect('http://' + host + '/');
+
+        $scope.socket.on('connect', function () {
+            $scope.resetUserMessage();
+
+            $scope.socket.emit('userInfo', $scope.user);
+        });
+
+        $scope.socket.on('message', function (data) {
+            chatService.messages.add(data);
+            $scope.$digest();
+            setTimeout(function () {
+                $scope.scrollChatToBottom();
+            }, 1);
+        });
+
+        document.querySelector('.chat-messages').addEventListener('mousewheel', function (e) {
+            var scrollUp = e.deltaY < 0;
+            var scrollHeight = this.scrollHeight - this.offsetHeight;
+
+            if (scrollUp && this.scrollTop >= scrollHeight - 200) $scope.scrollLocked = true;else if (!scrollUp && this.scrollTop >= scrollHeight - 200) $scope.scrollLocked = false;
+        });
+    });
 });

@@ -29,8 +29,8 @@
                     Current Chats
                 </ion-item>
 
-                <ion-item ng-repeat="chat in chatlist" href="#/app/chat/message/{{chat._id}}" class="chat-flex">
-                    <div class="sender">{{ chat.Recipient.DisplayName }}</div>
+                <ion-item ng-repeat="chat in chatlist"  href="#/app/messages/{{ chat._id }}" class="chat-flex">
+                    <div class="sender">{{ chat.Recipient.Username === user.Username ? chat.Sender.DisplayName : chat.Recipient.DisplayName }}</div>
                     <div class="last-message">{{ chat.LastMessage }}</div>
                     <ion-datetime class="last-timestamp">{{ formatDate(chat.LastTimestamp, 'h:mmAA DD/MM/YYYY') }}</ion-datetime>
                 </ion-item>

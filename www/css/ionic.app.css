@@ -9868,6 +9868,59 @@ a.button {
     flex: 1 0 25%;
     text-align: right; }
 
+.chat-messages {
+  bottom: 4rem; }
+  .chat-messages ion-list {
+    display: flex;
+    flex-flow: column;
+    justify-content: flex-end; }
+  .chat-messages .chat-message {
+    animation: slide-left 0.5s ease-in-out forwards;
+    padding: 0;
+    height: 4rem; }
+    .chat-messages .chat-message.alternative {
+      background-color: #EEE;
+      animation: slide-right 0.5s ease-in-out forwards; }
+    .chat-messages .chat-message .sender {
+      position: absolute;
+      top: 0.25rem;
+      left: 0.5rem;
+      font-weight: 600; }
+    .chat-messages .chat-message .message {
+      position: absolute;
+      top: 1.5rem;
+      left: 0.5rem; }
+    .chat-messages .chat-message .timestamp {
+      position: absolute;
+      right: 0.5rem;
+      top: 0.25rem;
+      color: #666;
+      font-size: 0.8rem; }
+
+.chat-footer {
+  height: 4rem;
+  border-top: solid 1px #999; }
+  .chat-footer textarea {
+    height: 100%;
+    width: 100%;
+    resize: none; }
+
+@keyframes slide-left {
+  0% {
+    transform: translateX(50%);
+    opacity: 0; }
+  100% {
+    transform: translate(0);
+    opacity: 1; } }
+
+@keyframes slide-right {
+  0% {
+    transform: translateX(-50%);
+    opacity: 0; }
+  100% {
+    transform: translateX(0);
+    opacity: 1; } }
+
 @keyframes jumper {
   0% {
     transform: translate(0, 0);

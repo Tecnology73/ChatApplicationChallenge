@@ -8,6 +8,7 @@ var host = window.location.hostname + ':' + 8080;
 var chat = angular.module('chat');
 
 chat.service('authService', function ($http, $state) {
+    var user = null;
     var token = readLocalCookie('chatToken');
     var _loginSubmitted = false;
 
@@ -23,14 +24,23 @@ chat.service('authService', function ($http, $state) {
         loginSubmitted: function loginSubmitted() {
             return _loginSubmitted;
         },
+        getUser: function getUser() {
+            return user;
+        },
         login: function login(data) {
-            _loginSubmitted = true;
-            $http.post('http://' + host + '/login', data).then(function (result) {
-                if (result.data.success) {
-                    user = result.data.user;
-                    document.cookie = 'chatToken=' + result.data.token;
-                }
-                _loginSubmitted = false;
+            return new Promise(function (resolve, reject) {
+                _loginSubmitted = true;
+                $http.post('http://' + host + '/login', data).then(function (result) {
+                    if (result.data.success) {
+                        user = result.data.user;
+                        document.cookie = 'chatToken=' + result.data.token;
+                    }
+                    _loginSubmitted = false;
+                    resolve(result.data.success);
+                }).catch(function (err) {
+                    _loginSubmitted = false;
+                    reject(err);
+                });
             });
         },
         logout: function logout() {

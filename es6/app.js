@@ -4,7 +4,7 @@
 
 let chat = angular.module('chat', ['ionic']);
 
-chat.run(($ionicPlatform, $rootScope, $state, $location, authService) => {
+chat.run(($ionicPlatform, $rootScope, authService) => {
     $ionicPlatform.ready(() => {
         if(window.cordova && window.cordova.plugins.Keyboard) {
             cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
@@ -20,7 +20,6 @@ chat.run(($ionicPlatform, $rootScope, $state, $location, authService) => {
             event.preventDefault();
             $state.go('app.login');
         }
-    });
 });
 
 chat.config(($stateProvider, $urlRouterProvider) => {
@@ -49,8 +48,8 @@ chat.config(($stateProvider, $urlRouterProvider) => {
                 }
             }
         },
-        'app.chat.message': {
-            url: '/chat/message',
+        'app.message': {
+            url: '/messages/:id',
             views: {
                 menuContent: {
                     templateUrl: 'templates/chat.message.html',

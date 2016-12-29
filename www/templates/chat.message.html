@@ -1,0 +1,15 @@
+<ion-view view-title="Messaging" class="testing">
+    <ion-content class="chat-messages">
+        <ion-list>
+            <ion-item ng-repeat="message in messages" class="chat-message" ng-class="{ 'alternative': message.Sender.Username !== user.Username }">
+                <div class="sender">{{ message.Sender.DisplayName }}</div>
+                <div class="message">{{ message.Message }}</div>
+                <div class="timestamp">{{ formatDate(message.Timestamp, 'hh:mm AA') }}</div>
+            </ion-item>
+        </ion-list>
+    </ion-content>
+
+    <ion-footer-bar class="chat-footer">
+        <textarea placeholder="Type a message here..." ng-model="userMessage.Message" ng-keyup="sendMessage($event)" ng-disabled="!userMessage"></textarea>
+    </ion-footer-bar>
+</ion-view>

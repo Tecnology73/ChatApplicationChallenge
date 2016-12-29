@@ -11,6 +11,7 @@ chat.service('chatService', function ($http) {
     var chatMessages = [];
     var token = readLocalCookie('chatToken');
     var userSearchResults = [];
+    var chatInfo = null;
 
     $http.get('http://' + host + '/api/chat/list?token=' + token).then(function (response) {
         if (response.data.success) chatList = response.data.result;
@@ -28,6 +29,22 @@ chat.service('chatService', function ($http) {
             },
             clear: function clear() {
                 userSearchResults = [];
+            }
+        },
+        chatInfo: {
+            getRemoteInfo: function getRemoteInfo(chatId) {
+                $http.get('http://' + host + '/api/chat/' + chatId + '?token=' + token).then(function (response) {
+                    if (response.data.success) chatInfo = response.data.info;
+                });
+            },
+            get: function get() {
+                return chatInfo;
+            },
+            set: function set(info) {
+                chatInfo = info;
+            },
+            clear: function clear() {
+                chatInfo = null;
             }
         },
         list: {
@@ -75,9 +92,42 @@ chat.service('chatService', function ($http) {
                 }
                 chatMessages = tmp;
             },
+            removeRange: function removeRange(a, b) {
+                if (a < 0) a = 0;
+                if (b > chatMessages.length) b = chatMessages.length;
+                chatMessages.splice(a, b);
+            },
             clear: function clear() {
                 chatMessages = [];
             }
+        },
+        formatDate: function formatDate(date, userFormat) {
+            if (typeof date === 'string' || typeof date === 'number') date = new Date(date);
+
+            var formats = {
+                'DD': ('0' + date.getDate()).slice(-2),
+                'D': date.getDate(),
+                'MM': ('0' + date.getMonth()).slice(-2),
+                'M': date.getMonth(),
+                'YYYY': date.getFullYear(),
+                'YY': date.getYear(),
+                'hh': ('0' + date.getHours()).slice(-2),
+                'h': date.getHours(),
+                'mm': ('0' + date.getMinutes()).slice(-2),
+                'm': date.getMinutes(),
+                'ss': ('0' + date.getSeconds()).slice(-2),
+                's': date.getSeconds(),
+                'AA': date.getHours() > 12 ? 'PM' : 'AM',
+                'aa': date.getHours() > 12 ? 'pm' : 'am'
+            };
+
+            if (formats['h'] > 12) formats['h'] -= 12;
+            if (formats['h'] === 0) formats['h'] = 12;
+            formats['hh'] = ('0' + formats['h']).slice(-2);
+
+            for (var format in formats) {
+                userFormat = userFormat.replace(format, formats[format]);
+            }return userFormat;
         }
     };
 });
