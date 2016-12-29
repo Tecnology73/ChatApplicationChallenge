@@ -1,0 +1,9 @@
+{
+  "name": "chat",
+  "app_id": "",
+  "gulpStartupTasks": [
+    "babel",
+    "sass",
+    "watch"
+  ]
+}
