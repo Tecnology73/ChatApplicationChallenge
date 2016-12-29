@@ -4,64 +4,21 @@
  * Created by texpe on 30/12/2016.
  */
 
-var controllers = angular.module('controllers', []);
+var host = window.location.hostname + ':' + 8080;
+var controllers = angular.module('chat');
 
-controllers.controller('AppCtrl', function ($scope, $ionicModal, $timeout, $http, $window) {
-    $scope.loginData = {};
-    $scope.user = null;
+controllers.controller('AppCtrl', function ($scope) {});
 
-    var token = readLocalCookie('chatToken');
-
-    if (token) {
-        $http.get('http://localhost:8080/api/users/' + token).then(function (result) {
-            if (result.data.success) $scope.user = result.data.user;
-        });
-    }
-
-    $ionicModal.fromTemplateUrl('templates/login.html', {
-        scope: $scope
-    }).then(function (modal) {
-        $scope.modal = modal;
-    });
-
-    $scope.closeLogin = function () {
-        $scope.loginData = {};
-        $scope.modal.hide();
-    };
-
-    $scope.login = function () {
-        $scope.modal.show();
-    };
-
-    $scope.logout = function () {
-        $http.get('http://localhost:8080/logout?token=' + readLocalCookie('chatToken')).then(function (result) {
-            console.log(result.data);
-            if (result.data.success) {
-                document.cookie = 'chatToken=;expires=-1;';
-                $window.location.reload();
-            }
-        });
-    };
-
-    $scope.doLogin = function () {
-        $http.post('http://localhost:8080/login', $scope.loginData).then(function (result) {
-            document.cookie = 'chatToken=' + result.data.token;
-            if (result.data.success) $window.location.reload();
-
-            $scope.closeLogin();
-        });
-    };
-});
-
-controllers.controller('ChatListCtrl', function ($scope, $http) {
-    $scope.playlists = [{ title: 'Reggae', id: 1 }, { title: 'Chill', id: 2 }, { title: 'Dubstep', id: 3 }, { title: 'Indie', id: 4 }, { title: 'Rap', id: 5 }, { title: 'Cowbell', id: 6 }];
-
-    $scope.chatList = [];
-    var token = readLocalCookie('chatToken');
-
-    if (token) {
-        $http.get('http://localhost:8080/api/chat/list?token=' + token).then(function (response) {
+controllers.controller('ChatListCtrl', function ($scope) {
+    /*$scope.chatList = [];
+    const token = readLocalCookie('chatToken');
+      if(token) {
+        $http.get(`http://${host}/api/chat/list?token=` + token).then(response => {
             console.log(response);
         });
-    }
+    }*/
 });
+
+controllers.controller('HomeCtrl', function ($scope) {});
+
+controllers.controller('LoginCtrl', function ($scope) {});

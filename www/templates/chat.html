@@ -1,0 +1,27 @@
+<ion-view view-title="Login">
+  <ion-content>
+    <ion-list ng-if="user">
+      <ion-item ng-repeat="chat in chatList" href="#/app/chat/{{chat._id}}">
+        {{ chat.sender }}
+      </ion-item>
+    </ion-list>
+
+    <form ng-submit="doLogin()" ng-if="!user">
+      <div class="list">
+        <label class="item item-input">
+          <span class="input-label">Username</span>
+          <input type="text" ng-model="loginData.Username">
+        </label>
+
+        <label class="item item-input">
+          <span class="input-label">Password</span>
+          <input type="password" ng-model="loginData.Password">
+        </label>
+
+        <label class="item">
+          <button class="button button-block button-positive" type="submit">Log in</button>
+        </label>
+      </div>
+    </form>
+  </ion-content>
+</ion-view>
