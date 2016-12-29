@@ -9814,3 +9814,56 @@ a.button {
   opacity: 0;
   -webkit-transition-duration: 0s;
   transition-duration: 0s; }
+
+.login-loading {
+  position: relative;
+  top: 15px;
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  left: 50%;
+  margin-left: -25px; }
+  .login-loading .jumper {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: inline-block;
+    width: 10px;
+    height: 10px; }
+
+.jumper:nth-child(1) {
+  animation: jumper 2s infinite 0s linear normal; }
+
+.jumper:nth-child(2) {
+  animation: jumper 2s infinite 0.5s linear normal; }
+
+.jumper:nth-child(3) {
+  animation: jumper 2s infinite 1s linear normal; }
+
+.jumper:nth-child(4) {
+  animation: jumper 2s infinite 1.5s linear normal; }
+
+@keyframes jumper {
+  0% {
+    transform: translate(0, 0);
+    background-color: #CCC; }
+  12% {
+    background-color: #999; }
+  25% {
+    transform: translate(0, 40px);
+    background-color: #CCC; }
+  37% {
+    background-color: #999; }
+  50% {
+    transform: translate(40px, 40px);
+    background-color: #CCC; }
+  62% {
+    background-color: #999; }
+  75% {
+    transform: translate(40px, 0);
+    background-color: #CCC; }
+  87% {
+    background-color: #999; }
+  100% {
+    transform: translate(0, 0);
+    background-color: #CCC; } }

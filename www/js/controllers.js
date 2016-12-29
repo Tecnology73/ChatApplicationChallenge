@@ -7,18 +7,32 @@
 var host = window.location.hostname + ':' + 8080;
 var controllers = angular.module('chat');
 
-controllers.controller('AppCtrl', function ($scope) {});
+controllers.controller('AppCtrl', function ($scope, authService, $state, $ionicHistory) {
+    $scope.loginSubmitted = false;
 
-controllers.controller('ChatListCtrl', function ($scope) {
-    /*$scope.chatList = [];
-    const token = readLocalCookie('chatToken');
-      if(token) {
-        $http.get(`http://${host}/api/chat/list?token=` + token).then(response => {
-            console.log(response);
-        });
-    }*/
+    $scope.$watch(authService.isLoggedIn, function (value, oldValue) {
+        $ionicHistory.nextViewOptions({ disableBack: true });
+        if (!value && oldValue) $state.go('app.login');else $state.go('app.chat');
+        $scope.isLoggedIn = authService.isLoggedIn();
+    });
+
+    $scope.$watch(authService.loginSubmitted, function (value, oldValue) {
+        if (value && !oldValue) $scope.loginSubmitted = true;else $scope.loginSubmitted = false;
+    });
+
+    $scope.logout = function () {
+        authService.logout();
+    };
 });
 
-controllers.controller('HomeCtrl', function ($scope) {});
+controllers.controller('ChatListCtrl', function ($scope, chatService) {
+    console.log(chatService.list.get());
+});
 
-controllers.controller('LoginCtrl', function ($scope) {});
+controllers.controller('LoginCtrl', function ($scope, authService) {
+    $scope.data = {};
+
+    $scope.login = function () {
+        authService.login($scope.data);
+    };
+});

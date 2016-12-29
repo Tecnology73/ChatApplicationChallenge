@@ -1,0 +1,59 @@
+.login-loading {
+  position: relative;
+  top: 15px;
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  left: 50%;
+  margin-left: -25px;
+
+  .jumper {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+  }
+}
+
+@for $i from 1 through 4 {
+  .jumper:nth-child(#{$i}) {
+    animation: jumper 2s infinite #{0.5 * ($i - 1)}s linear normal;
+  }
+}
+
+@keyframes jumper {
+  0% {
+    transform: translate(0,0);
+    background-color: #CCC;
+  }
+  12% {
+    background-color: #999;
+  }
+  25% {
+    transform: translate(0,40px);
+    background-color: #CCC;
+  }
+  37% {
+    background-color: #999;
+  }
+  50% {
+    transform: translate(40px,40px);
+    background-color: #CCC;
+  }
+  62% {
+    background-color: #999;
+  }
+  75% {
+    transform: translate(40px,0);
+    background-color: #CCC;
+  }
+  87% {
+    background-color: #999;
+  }
+  100% {
+    transform: translate(0,0);
+    background-color: #CCC;
+  }
+}

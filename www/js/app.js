@@ -6,7 +6,7 @@
 
 var chat = angular.module('chat', ['ionic']);
 
-chat.run(function ($ionicPlatform, $rootScope, $state, authService) {
+chat.run(function ($ionicPlatform, $rootScope, $state, $location, authService) {
     $ionicPlatform.ready(function () {
         if (window.cordova && window.cordova.plugins.Keyboard) {
             cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
@@ -16,14 +16,10 @@ chat.run(function ($ionicPlatform, $rootScope, $state, authService) {
         if (window.StatusBar) StatusBar.styleDefault();
     });
 
-    $rootScope.$on('$routeChangeStart', function (event) {
+    $rootScope.$on('$locationChangeStart', function (event) {
         if (!authService.isLoggedIn()) {
-            console.log('DENY');
             event.preventDefault();
-            $location.path('/login');
-        } else {
-            console.log('ALLOW');
-            $location.path('/home');
+            $state.go('app.login');
         }
     });
 });
@@ -35,15 +31,6 @@ chat.config(function ($stateProvider, $urlRouterProvider) {
             abstract: true,
             templateUrl: 'templates/menu.html',
             controller: 'AppCtrl'
-        },
-        'app.home': {
-            url: '/home',
-            views: {
-                menuContent: {
-                    templateUrl: 'templates/home.html',
-                    controller: 'HomeCtrl'
-                }
-            }
         },
         'app.login': {
             url: '/login',
@@ -57,7 +44,7 @@ chat.config(function ($stateProvider, $urlRouterProvider) {
         'app.chat': {
             url: '/chat',
             views: {
-                'menuContent': {
+                menuContent: {
                     templateUrl: 'templates/chat.html',
                     controller: 'ChatListCtrl'
                 }
@@ -70,5 +57,5 @@ chat.config(function ($stateProvider, $urlRouterProvider) {
         $stateProvider.state(state, states[state]);
     }
 
-    $urlRouterProvider.otherwise('/app/login');
+    $urlRouterProvider.otherwise('/app/home');
 });

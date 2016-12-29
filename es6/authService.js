@@ -5,23 +5,28 @@
 const host = (window.location.hostname + ':' + 8080);
 let chat = angular.module('chat');
 
-chat.service('authService', ($http) => {
+chat.service('authService', ($http, $state) => {
     const token = readLocalCookie('chatToken');
+    let loginSubmitted = false;
 
     if(token) {
+        loginSubmitted = true;
         $http.get(`http://${host}/api/users/${token}`).then(result => {
             if(result.data.success) user = result.data.user;
+            loginSubmitted = false;
         });
     }
 
     return {
+        loginSubmitted: () => { return loginSubmitted; },
         login: (data) => {
+            loginSubmitted = true;
             $http.post(`http://${host}/login`, data).then(result => {
-                user = result.data.user;
-                document.cookie = 'chatToken=' + result.data.token;
-                if(result.data.success) $window.location.reload();
-
-                $scope.closeLogin();
+                if(result.data.success) {
+                    user = result.data.user;
+                    document.cookie = 'chatToken=' + result.data.token;
+                }
+                loginSubmitted = false;
             });
         },
         logout: () => {
@@ -29,7 +34,7 @@ chat.service('authService', ($http) => {
                 if(result.data.success) {
                     document.cookie = 'chatToken=;expires=-1;'
                     user = null;
-                    $state.go('app.home');
+                    $state.go('app.login');
                 }
             });
         },
