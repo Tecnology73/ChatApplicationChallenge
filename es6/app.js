@@ -48,6 +48,15 @@ chat.config(($stateProvider, $urlRouterProvider) => {
                     controller: 'ChatListCtrl'
                 }
             }
+        },
+        'app.chat.message': {
+            url: '/chat/message',
+            views: {
+                menuContent: {
+                    templateUrl: 'templates/chat.message.html',
+                    controller: 'ChatMessageCtrl'
+                }
+            }
         }
     };
 

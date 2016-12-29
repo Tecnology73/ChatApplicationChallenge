@@ -10,12 +10,26 @@ chat.service('chatService', function ($http) {
     var chatList = [];
     var chatMessages = [];
     var token = readLocalCookie('chatToken');
+    var userSearchResults = [];
 
     $http.get('http://' + host + '/api/chat/list?token=' + token).then(function (response) {
         if (response.data.success) chatList = response.data.result;
     });
 
     return {
+        users: {
+            search: function search(fragment) {
+                $http.get('http://' + host + '/api/users/search/' + fragment + '?token=' + token).then(function (response) {
+                    userSearchResults = response.data.results;
+                });
+            },
+            results: function results() {
+                return userSearchResults;
+            },
+            clear: function clear() {
+                userSearchResults = [];
+            }
+        },
         list: {
             get: function get() {
                 return chatList;
@@ -33,6 +47,12 @@ chat.service('chatService', function ($http) {
             },
             clear: function clear() {
                 chatList = [];
+            },
+            add: function add(user) {
+                chatList.push(user);
+                $http.put('http://' + host + '/api/chat/list/' + user.Username + '?token=' + token).then(function (response) {
+                    console.log(response.data);
+                });
             }
         },
         messages: {

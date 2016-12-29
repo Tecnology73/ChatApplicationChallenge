@@ -9843,6 +9843,31 @@ a.button {
 .jumper:nth-child(4) {
   animation: jumper 2s infinite 1.5s linear normal; }
 
+.user-search-close,
+.user-item .ion-paper-airplane {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  padding: 0.5rem 0.75rem;
+  line-height: 2rem; }
+
+.user-item .ion-paper-airplane {
+  font-size: 1.5rem;
+  padding-right: 1rem; }
+
+.chat-flex a.item-content {
+  display: flex;
+  width: 100%;
+  padding: 1rem; }
+  .chat-flex a.item-content .sender {
+    flex: 1 0 25%; }
+  .chat-flex a.item-content .last-message {
+    flex: 1 1 100%; }
+  .chat-flex a.item-content .last-timestamp {
+    flex: 1 0 25%;
+    text-align: right; }
+
 @keyframes jumper {
   0% {
     transform: translate(0, 0);

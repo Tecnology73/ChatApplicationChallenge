@@ -1,18 +1,44 @@
 <ion-view view-title="Chats">
     <ion-content>
-
-
         <ion-list>
             <ion-item>
-                <label class="item item-input">
+                <div class="item item-input">
                     <i class="icon ion-search placeholder-icon"></i>
-                    <input type="text" placeholder="Search for other users">
-                </label>
+                    <input type="text" placeholder="Search for other users" ng-change="searchUsers()" ng-model="search.fragment">
+                    <div class="icon ion-close user-search-close" ng-click="stopUserSearch()"></div>
+                </div>
             </ion-item>
 
-            <ion-item ng-repeat="chat in chatList" href="#/app/chat/{{chat._id}}">
-                {{ chat.sender }}
-            </ion-item>
+            <div ng-if="performingUserSearch">
+                <ion-item class="item-divider">
+                    Search Results
+                </ion-item>
+
+                <ion-item class="user-item" ng-repeat="user in userSearchResults" ng-click="addToChatList(user)">
+                    {{ user.DisplayName }}
+                    <span class="icon ion-paper-airplane"></span>
+                </ion-item>
+
+                <ion-item ng-if="userSearchResults.length <= 0" class="text-center">
+                    We couldn't find any users with that Username or Display Name.
+                </ion-item>
+            </div>
+
+            <div ng-if="!performingUserSearch">
+                <ion-item class="item-divider">
+                    Current Chats
+                </ion-item>
+
+                <ion-item ng-repeat="chat in chatlist" href="#/app/chat/message/{{chat._id}}" class="chat-flex">
+                    <div class="sender">{{ chat.Recipient.DisplayName }}</div>
+                    <div class="last-message">{{ chat.LastMessage }}</div>
+                    <ion-datetime class="last-timestamp">{{ formatDate(chat.LastTimestamp, 'h:mmAA DD/MM/YYYY') }}</ion-datetime>
+                </ion-item>
+
+                <ion-item ng-if="!chatlist || chatlist.length <= 0" class="text-center">
+                    You haven't messaged any other users yet. Search for them in the search bar above.
+                </ion-item>
+            </div>
         </ion-list>
     </ion-content>
 </ion-view>
