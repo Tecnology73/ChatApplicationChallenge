@@ -13,7 +13,7 @@ controllers.controller('AppCtrl', function ($scope, $ionicModal, $timeout, $http
     var token = readLocalCookie('chatToken');
 
     if (token) {
-        $http.get('http://localhost:8080/' + token).then(function (result) {
+        $http.get('http://localhost:8080/api/users/' + token).then(function (result) {
             if (result.data.success) $scope.user = result.data.user;
         });
     }
@@ -34,8 +34,13 @@ controllers.controller('AppCtrl', function ($scope, $ionicModal, $timeout, $http
     };
 
     $scope.logout = function () {
-        document.cookie = 'chatToken=;expires=-1;';
-        $window.location.reload();
+        $http.get('http://localhost:8080/logout?token=' + readLocalCookie('chatToken')).then(function (result) {
+            console.log(result.data);
+            if (result.data.success) {
+                document.cookie = 'chatToken=;expires=-1;';
+                $window.location.reload();
+            }
+        });
     };
 
     $scope.doLogin = function () {
@@ -55,7 +60,7 @@ controllers.controller('ChatListCtrl', function ($scope, $http) {
     var token = readLocalCookie('chatToken');
 
     if (token) {
-        $http.get('http://localhost:8080/api/chatlist?token=' + token).then(function (response) {
+        $http.get('http://localhost:8080/api/chat/list?token=' + token).then(function (response) {
             console.log(response);
         });
     }

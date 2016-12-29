@@ -11,7 +11,7 @@ controllers.controller('AppCtrl', ($scope, $ionicModal, $timeout, $http, $window
     const token = readLocalCookie('chatToken');
 
     if(token) {
-        $http.get('http://localhost:8080/' + token).then(result => {
+        $http.get('http://localhost:8080/api/users/' + token).then(result => {
             if (result.data.success) $scope.user = result.data.user;
         });
     }
@@ -32,8 +32,13 @@ controllers.controller('AppCtrl', ($scope, $ionicModal, $timeout, $http, $window
     };
 
     $scope.logout = () => {
-        document.cookie = 'chatToken=;expires=-1;'
-        $window.location.reload();
+        $http.get('http://localhost:8080/logout?token=' + readLocalCookie('chatToken')).then(result => {
+            console.log(result.data);
+            if(result.data.success) {
+                document.cookie = 'chatToken=;expires=-1;'
+                $window.location.reload();
+            }
+        });
     };
 
     $scope.doLogin = () => {
@@ -60,7 +65,7 @@ controllers.controller('ChatListCtrl', ($scope, $http) => {
     const token = readLocalCookie('chatToken');
 
     if(token) {
-        $http.get('http://localhost:8080/api/chatlist?token=' + token).then(response => {
+        $http.get('http://localhost:8080/api/chat/list?token=' + token).then(response => {
             console.log(response);
         });
     }
