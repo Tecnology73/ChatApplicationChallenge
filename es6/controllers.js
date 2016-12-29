@@ -8,6 +8,14 @@ controllers.controller('AppCtrl', ($scope, $ionicModal, $timeout, $http, $window
     $scope.loginData = {};
     $scope.user = null;
 
+    const token = readLocalCookie('chatToken');
+
+    if(token) {
+        $http.get('http://localhost:8080/' + token).then(result => {
+            if (result.data.success) $scope.user = result.data.user;
+        });
+    }
+
     $ionicModal.fromTemplateUrl('templates/login.html', {
         scope: $scope
     }).then(modal => {
@@ -36,31 +44,9 @@ controllers.controller('AppCtrl', ($scope, $ionicModal, $timeout, $http, $window
             $scope.closeLogin();
         });
     };
-
-    $scope.readLocalCookie = (name) => {
-        if(!name) return null;
-        const cookies = document.cookie.split(';');
-        for(let i = 0; i < cookies.length; i++) {
-            if(cookies[i].indexOf('=') < 0) continue;
-            if(cookies[i].substr(0, cookies[i].indexOf('=')) === name) {
-                return cookies[i].substr(cookies[i].indexOf('=') + 1, cookies[i].length - cookies[i].indexOf('=') - 1);
-            }
-        }
-        return null;
-    };
-
-    $timeout(() => {
-        const token = $scope.readLocalCookie('chatToken');
-
-        if(token) {
-            $http.get('http://localhost:8080/' + token).then(result => {
-                if (result.data.success) $scope.user = result.data.user;
-            });
-        }
-    }, 0);
 });
 
-controllers.controller('PlaylistsCtrl', $scope => {
+controllers.controller('ChatListCtrl', ($scope, $http) => {
     $scope.playlists = [
         { title: 'Reggae', id: 1 },
         { title: 'Chill', id: 2 },
@@ -69,4 +55,13 @@ controllers.controller('PlaylistsCtrl', $scope => {
         { title: 'Rap', id: 5 },
         { title: 'Cowbell', id: 6 }
     ];
+
+    $scope.chatList = [];
+    const token = readLocalCookie('chatToken');
+
+    if(token) {
+        $http.get('http://localhost:8080/api/chatlist?token=' + token).then(response => {
+            console.log(response);
+        });
+    }
 });

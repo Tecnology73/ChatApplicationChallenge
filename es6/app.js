@@ -24,12 +24,12 @@ chat.config(($stateProvider, $urlRouterProvider) => {
             templateUrl: 'templates/menu.html',
             controller: 'AppCtrl'
         },
-        'app.playlists': {
-            url: '/playlists',
+        'app.chats': {
+            url: '/chats',
             views: {
                 'menuContent': {
-                    templateUrl: 'templates/playlists.html',
-                    controller: 'PlaylistsCtrl'
+                    templateUrl: 'templates/chatlist.html',
+                    controller: 'ChatListCtrl'
                 }
             }
         }
@@ -40,5 +40,5 @@ chat.config(($stateProvider, $urlRouterProvider) => {
         $stateProvider.state(state, states[state]);
     }
 
-    $urlRouterProvider.otherwise('/app/playlists');
+    $urlRouterProvider.otherwise('/app/chats');
 });
