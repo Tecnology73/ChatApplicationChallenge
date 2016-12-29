@@ -111,6 +111,11 @@ controllers.controller('ChatMessageCtrl', ($scope, $stateParams, $timeout, chatS
 
             $scope.socket.send($scope.userMessage);
             chatService.messages.add($scope.userMessage);
+
+            $scope.chatInfo.LastMessage = $scope.userMessage.Message;
+            $scope.chatInfo.LastTimestamp = $scope.userMessage.Timestamp;
+            chatService.list.update($scope.chatInfo._id, $scope.chatInfo);
+
             setTimeout(() => { $scope.scrollChatToBottom() }, 1);
 
             $scope.resetUserMessage();
@@ -146,11 +151,13 @@ controllers.controller('ChatMessageCtrl', ($scope, $stateParams, $timeout, chatS
 
     $timeout(() => {
         chatService.chatInfo.getRemoteInfo($scope.chatId);
+        chatService.messages.getHistory($scope.chatId);
 
         $scope.socket = io.connect(`http://${host}/`);
 
         $scope.socket.on('connect', () => {
             $scope.resetUserMessage();
+            $scope.scrollChatToBottom();
 
             $scope.socket.emit('userInfo', $scope.user);
         });

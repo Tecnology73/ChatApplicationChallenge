@@ -61,6 +61,14 @@ chat.service('chatService', ($http) => {
                 }
                 chatList = tmp;
             },
+            update: (id, r) => {
+                for(let i = 0; i < chatList.length; i++) {
+                    if(chatList[i]._id === id) {
+                        chatList[i] = r;
+                        break;
+                    }
+                }
+            },
             clear: () => {
                 chatList = [];
             },
@@ -75,11 +83,32 @@ chat.service('chatService', ($http) => {
             get: () => {
                 return chatMessages;
             },
+            getHistory: (chatId, l, o) => {
+                let query = {};
+                query.token = token;
+                if(l) query.limit = l;
+                if(o) query.offset = o;
+                let urlQuery = '';
+                for(let q in query) {
+                    if(query.hasOwnProperty(q))
+                        urlQuery += q + '=' + query[q] + '&';
+                }
+                urlQuery = urlQuery.substr(0, urlQuery.length - 1);
+                $http.get(`http://${host}/api/chat/${chatId}/history?${urlQuery}`).then(response => {
+                    if(response.data.success)
+                        chatMessages = response.data.history;
+                });
+            },
             add: (item, index) => {
                 if (!item) return;
                 if (index && chatMessages.length - 1 < index) index = chatMessages.length - 1;
                 if (index) chatMessages.splice(index, 0, item);
-                else chatMessages.push(item);
+                else {
+                    chatMessages.push(item);
+                    $http.post(`http://${host}/api/chat/${chatInfo._id}?token=${token}`, item).then(response => {
+                        console.log(response);
+                    });
+                }
             },
             removeSingle: index => {
                 if (chatMessages.length - 1 < index) return;
